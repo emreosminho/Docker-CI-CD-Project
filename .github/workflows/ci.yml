@@ -1,0 +1,28 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build Docker image
+      run: docker build -t my-first-devops-project .
+
+    - name: Test Docker image
+      run: |
+        docker run -d -p 8080:80 my-first-devops-project
+        curl -f http://localhost:8080 || exit 1
+
+    - name: Cleanup Docker containers
+      run: docker ps -q | xargs docker stop
